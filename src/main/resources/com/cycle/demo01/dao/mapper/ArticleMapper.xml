@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cycle.demo01.dao.mapper.ArticleMapper">
+    <resultMap id="listArchives" type="com.cycle.demo01.dao.pojo.Article">
+        <result column="create_date" property="createDate"></result>
+    </resultMap>
+    <select id="listArchives" resultType="com.cycle.demo01.dao.dos.Archives">
+        select year(FROM_UNIXTIME(create_date/1000)) as year,month(FROM_UNIXTIME(create_date/1000)) as month,count(*) as count from ms_article
+        group by year,month
+    </select>
+</mapper>
