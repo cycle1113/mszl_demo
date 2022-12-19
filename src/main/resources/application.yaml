@@ -6,6 +6,12 @@ spring:
     url: jdbc:mysql://124.70.3.242:3306/study
     username: study
     password: yh3DC4yCLYckZ2Cf
+  redis:
+    port: 6379
+    host: localhost
+  main:
+    allow-circular-references: true
+
 mybatis:
   mapper-locations: classpath:mapper/*.xml
 
