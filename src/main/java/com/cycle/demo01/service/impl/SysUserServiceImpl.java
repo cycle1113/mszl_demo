@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.cycle.demo01.Vo.ErrorCode;
 import com.cycle.demo01.Vo.LoginUserVo;
 import com.cycle.demo01.Vo.Result;
+import com.cycle.demo01.Vo.UserVo;
 import com.cycle.demo01.dao.mapper.SysUserMapper;
 import com.cycle.demo01.dao.pojo.SysUser;
 import com.cycle.demo01.service.LoginService;
 import com.cycle.demo01.service.SysUserService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,9 +19,24 @@ public class SysUserServiceImpl implements SysUserService {
     private SysUserMapper sysUserMapper;
     @Autowired
     private LoginService loginService;
+
+    @Override
+    public UserVo findUserVoById(Long id) {
+        SysUser sysUser = sysUserMapper.selectById(id);
+        if (sysUser == null){
+//            sysUser = new SysUser();
+            sysUser.setNickname("cycle");
+            sysUser.setId(1L);
+            sysUser.setAvatar("/static/img/log.b3a48c0.png");
+        }
+        UserVo userVo = new UserVo();
+        BeanUtils.copyProperties(sysUser,userVo);
+        return userVo;
+    }
+
     @Override
     public SysUser findUserById(Long id) {
-        final SysUser sysUser = sysUserMapper.selectById(id);
+        SysUser sysUser = sysUserMapper.selectById(id);
         if (sysUser == null){
 //            sysUser = new SysUser();
             sysUser.setNickname("cycle");

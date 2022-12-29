@@ -9,11 +9,11 @@ public class Article {
     private Long id;
     private String title;
     private  String summary;
-    private int commentCounts;
-    private int viewCounts;
+    private Integer commentCounts;
+    private Integer viewCounts;
     private Long authorId;
     private Long bodyId;
     private Long categoryId;
-    private int weight = Article_Common;
+    private Integer weight;
     private Long createDate;
 }

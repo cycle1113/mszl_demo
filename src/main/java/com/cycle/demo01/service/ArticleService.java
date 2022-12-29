@@ -12,4 +12,11 @@ public interface ArticleService {
     Result newArticles(int limit);
 
     Result listArchives();
+
+    /**
+     *
+     * @param articleId
+     * @return
+     */
+    Result findArticleById(Long articleId);
 }

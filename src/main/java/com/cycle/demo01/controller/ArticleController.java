@@ -4,10 +4,7 @@ import com.cycle.demo01.Vo.Result;
 import com.cycle.demo01.Vo.params.PageParams;
 import com.cycle.demo01.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("articles")
@@ -35,6 +32,11 @@ public class ArticleController {
     public Result listArchives(){
 
         return articleService.listArchives();
+    }
+
+    @PostMapping("view/{id}")
+    public Result findArticleById(@PathVariable("id") Long articleId){
+        return articleService.findArticleById(articleId);
     }
 
 }
