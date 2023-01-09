@@ -2,17 +2,19 @@ package com.cycle.demo01.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.cycle.demo01.Vo.ArticleBodyVo;
-import com.cycle.demo01.Vo.ArticleVo;
-import com.cycle.demo01.Vo.CategoryVo;
-import com.cycle.demo01.Vo.Result;
+import com.cycle.demo01.Vo.*;
+import com.cycle.demo01.Vo.params.ArticleParam;
 import com.cycle.demo01.Vo.params.PageParams;
 import com.cycle.demo01.dao.dos.Archives;
 import com.cycle.demo01.dao.mapper.ArticleBodyMapper;
 import com.cycle.demo01.dao.mapper.ArticleMapper;
+import com.cycle.demo01.dao.mapper.ArticleTagMapper;
 import com.cycle.demo01.dao.pojo.Article;
 import com.cycle.demo01.dao.pojo.ArticleBody;
+import com.cycle.demo01.dao.pojo.ArticleTag;
+import com.cycle.demo01.dao.pojo.SysUser;
 import com.cycle.demo01.service.*;
+import com.cycle.demo01.utils.UserThreadLocal;
 import org.joda.time.DateTime;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,8 @@ import java.util.List;
 public class ArticleServiceImpl implements ArticleService {
     @Autowired
     private ArticleMapper articleMapper;
+    @Autowired
+    private ArticleTagMapper articleTagMapper;
     @Autowired
     private SysUserService sysUserService;
     @Autowired
@@ -82,6 +86,42 @@ public class ArticleServiceImpl implements ArticleService {
         Article article = this.articleMapper.selectById(articleId);
         ArticleVo articleVo = copy(article,true,true,true,true);
         threadService.updateArticleViewCount(articleMapper,article);
+        return Result.success(articleVo);
+    }
+
+    @Override
+    public Result publish(ArticleParam articleParam) {
+        System.out.println(articleParam);
+        SysUser sysUser = UserThreadLocal.get();
+        Article article = new Article();
+        article.setAuthorId(sysUser.getId());
+        article.setCreateDate(System.currentTimeMillis());
+        article.setCategoryId(articleParam.getCategory().getId());
+        article.setCommentCounts(0);
+        article.setSummary(articleParam.getSummary());
+        article.setTitle(articleParam.getTitle());
+        article.setViewCounts(0);
+        article.setWeight(Article.Article_Common);
+        article.setBodyId(-1L);
+        this.articleMapper.insert(article);
+        List<TagVo> tags = articleParam.getTags();
+        if (tags != null){
+            for (TagVo tag : tags){
+                ArticleTag articleTag = new ArticleTag();
+                articleTag.setTagId(tag.getId());
+                articleTag.setArticleId(tag.getId());
+                this.articleTagMapper.insert(articleTag);
+            }
+        }
+        ArticleBody articleBody = new ArticleBody();
+        articleBody.setContent(articleParam.getBody().getContent());
+        articleBody.setContentHtml(articleParam.getBody().getContentHtml());
+        articleBody.setArticleId(article.getId());
+        articleBodyMapper.insert(articleBody);
+        article.setBodyId(articleBody.getId());
+        articleMapper.updateById(article);
+        ArticleVo articleVo = new ArticleVo();
+        articleVo.setId(article.getId());
         return Result.success(articleVo);
     }
 

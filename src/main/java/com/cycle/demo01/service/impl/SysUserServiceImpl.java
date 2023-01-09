@@ -23,6 +23,7 @@ public class SysUserServiceImpl implements SysUserService {
     @Override
     public UserVo findUserVoById(Long id) {
         SysUser sysUser = sysUserMapper.selectById(id);
+        System.out.println(id);
         if (sysUser == null){
 //            sysUser = new SysUser();
             sysUser.setNickname("cycle");

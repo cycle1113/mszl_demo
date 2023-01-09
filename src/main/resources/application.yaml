@@ -11,6 +11,10 @@ spring:
     host: localhost
   main:
     allow-circular-references: true
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 20MB
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
@@ -21,3 +25,6 @@ mybatis-plus:
   global-config:
     db-config:
       table-prefix: ms_
+
+
+

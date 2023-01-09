@@ -1,6 +1,7 @@
 package com.cycle.demo01.service;
 
 import com.cycle.demo01.Vo.Result;
+import com.cycle.demo01.Vo.params.ArticleParam;
 import com.cycle.demo01.Vo.params.PageParams;
 
 public interface ArticleService {
@@ -19,4 +20,6 @@ public interface ArticleService {
      * @return
      */
     Result findArticleById(Long articleId);
+
+    Result publish(ArticleParam articleParam);
 }
