@@ -20,6 +20,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +40,21 @@ public class ArticleServiceImpl implements ArticleService {
     public Result listArticlePage(PageParams pageParams) {
         Page<Article> page = new Page<>(pageParams.getPage(), pageParams.getPageSize());
         LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        if (pageParams.getCategoryId()!=null){
+            queryWrapper.eq(Article::getCategoryId,pageParams.getCategoryId());
+        }
+        List<Long> articleIdList = new ArrayList<>();
+        if (pageParams.getTagId()!=null){
+            LambdaQueryWrapper<ArticleTag> articleTagLambdaQueryWrapper =new LambdaQueryWrapper<>();
+            articleTagLambdaQueryWrapper.eq(ArticleTag::getTagId,pageParams.getTagId());
+            List<ArticleTag> articleTags = articleTagMapper.selectList(articleTagLambdaQueryWrapper);
+            for (ArticleTag articleTag : articleTags){
+                articleIdList.add(articleTag.getArticleId());
+            }
+            if (articleTags.size()>0){
+                queryWrapper.in(Article::getId,articleIdList);
+            }
+        }
         //置顶排序条件
         queryWrapper.orderByDesc(Article::getWeight);
         //时间排序条件
@@ -174,7 +190,7 @@ public class ArticleServiceImpl implements ArticleService {
         return categoryService.findCategoryById(categoryId);
     }
 
-    @Autowired
+    @Resource
     private ArticleBodyMapper articleBodyMapper;
     private ArticleBodyVo findArticleBodyById(Long bodyId) {
         ArticleBody articleBody = articleBodyMapper.selectById(bodyId);

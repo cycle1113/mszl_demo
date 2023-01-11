@@ -46,6 +46,19 @@ public class TagServiceImpl implements TagService {
         return Result.success(copyList(tags));
     }
 
+    @Override
+    public Result findAllDetail() {
+        List<Tag> tags = this.tagMapper.selectList(new LambdaQueryWrapper<>());
+        return Result.success(copyList(tags));
+    }
+
+    @Override
+    public Result findAllDetailById(Long id) {
+        Tag tag = this.tagMapper.selectById(id);
+        TagVo tagVo = copy(tag);
+        return Result.success(tagVo);
+    }
+
     private List<TagVo> copyList(List<Tag> tagList) {
         List<TagVo> tagVoList = new ArrayList<>();
         for (Tag tag : tagList){
