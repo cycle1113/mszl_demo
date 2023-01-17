@@ -1,6 +1,7 @@
 package com.cycle.demo01.controller;
 
 import com.cycle.demo01.Vo.Result;
+import com.cycle.demo01.common.cache.Cache;
 import com.cycle.demo01.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +21,7 @@ public class TagController {
     }
 
     @GetMapping("hot")
+    @Cache(expire = 5*60*1000,name = "hot_article")
     public Result hot(){
         int limit = 6;
         return tagService.hots(limit);

@@ -1,6 +1,7 @@
 package com.cycle.demo01.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.cycle.demo01.Vo.*;
 import com.cycle.demo01.Vo.params.ArticleParam;
@@ -37,33 +38,40 @@ public class ArticleServiceImpl implements ArticleService {
     @Autowired
     private TagService tagService;
     @Override
-    public Result listArticlePage(PageParams pageParams) {
+    public Result listArticlePage(PageParams pageParams){
         Page<Article> page = new Page<>(pageParams.getPage(), pageParams.getPageSize());
-        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
-        if (pageParams.getCategoryId()!=null){
-            queryWrapper.eq(Article::getCategoryId,pageParams.getCategoryId());
-        }
-        List<Long> articleIdList = new ArrayList<>();
-        if (pageParams.getTagId()!=null){
-            LambdaQueryWrapper<ArticleTag> articleTagLambdaQueryWrapper =new LambdaQueryWrapper<>();
-            articleTagLambdaQueryWrapper.eq(ArticleTag::getTagId,pageParams.getTagId());
-            List<ArticleTag> articleTags = articleTagMapper.selectList(articleTagLambdaQueryWrapper);
-            for (ArticleTag articleTag : articleTags){
-                articleIdList.add(articleTag.getArticleId());
-            }
-            if (articleTags.size()>0){
-                queryWrapper.in(Article::getId,articleIdList);
-            }
-        }
-        //置顶排序条件
-        queryWrapper.orderByDesc(Article::getWeight);
-        //时间排序条件
-        queryWrapper.orderByDesc(Article::getCreateDate);
-        Page<Article> articlePage = articleMapper.selectPage(page, queryWrapper);
-        List<Article> records = articlePage.getRecords();
-        List<ArticleVo> articleVoList = copyList(records,true,true);
-        return Result.success(articleVoList);
+        IPage<Article> articleIPage = articleMapper.listArticle(page, pageParams.getCategoryId(), pageParams.getTagId(), pageParams.getYear(), pageParams.getMonth());
+        List<Article> records = articleIPage.getRecords();
+        return Result.success(copyList(records,true,true));
     }
+//   @Override
+//    public Result listArticlePage(PageParams pageParams) {
+//        Page<Article> page = new Page<>(pageParams.getPage(), pageParams.getPageSize());
+//        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+//        if (pageParams.getCategoryId()!=null){
+//            queryWrapper.eq(Article::getCategoryId,pageParams.getCategoryId());
+//        }
+//        List<Long> articleIdList = new ArrayList<>();
+//        if (pageParams.getTagId()!=null){
+//            LambdaQueryWrapper<ArticleTag> articleTagLambdaQueryWrapper =new LambdaQueryWrapper<>();
+//            articleTagLambdaQueryWrapper.eq(ArticleTag::getTagId,pageParams.getTagId());
+//            List<ArticleTag> articleTags = articleTagMapper.selectList(articleTagLambdaQueryWrapper);
+//            for (ArticleTag articleTag : articleTags){
+//                articleIdList.add(articleTag.getArticleId());
+//            }
+//            if (articleTags.size()>0){
+//                queryWrapper.in(Article::getId,articleIdList);
+//            }
+//        }
+//        //置顶排序条件
+//        queryWrapper.orderByDesc(Article::getWeight);
+//        //时间排序条件
+//        queryWrapper.orderByDesc(Article::getCreateDate);
+//        Page<Article> articlePage = articleMapper.selectPage(page, queryWrapper);
+//        List<Article> records = articlePage.getRecords();
+//        List<ArticleVo> articleVoList = copyList(records,true,true);
+//        return Result.success(articleVoList);
+//    }
 
     @Override
     public Result hotArticles(int limit) {

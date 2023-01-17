@@ -3,6 +3,7 @@ package com.cycle.demo01.controller;
 import com.cycle.demo01.Vo.Result;
 import com.cycle.demo01.Vo.params.PageParams;
 import com.cycle.demo01.Vo.params.ArticleParam;
+import com.cycle.demo01.common.cache.Cache;
 import com.cycle.demo01.service.ArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ public class ArticleController {
     private ArticleService articleService;
     @PostMapping
     @LogAnnotation(module="文章",operation="获取文章列表")
+    @Cache(expire = 5*60*1000,name = "articles")
     public Result articles(@RequestBody PageParams pageParams){
         Result articles = articleService.listArticlePage(pageParams);
         return Result.success(articles);
